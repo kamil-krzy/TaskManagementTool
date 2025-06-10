@@ -24,7 +24,7 @@ def test_create_task():
     res_data = res.json()
     assert res_data["title"] == "Basic Task"
     assert res_data["desc"] == "Basic Description"
-    assert res_data["completed"] == False
+    assert not res_data["completed"]
     assert "id" in  res_data
 
 def test_create_project():
@@ -63,7 +63,7 @@ def test_update_task():
     res_data = res.json()
     assert res_data["title"] == "Deadline Task Modified"
     assert res_data["desc"] == "Deadline Description"
-    assert res_data["completed"] == True
+    assert res_data["completed"]
     assert res_data["id"] == 2
     assert res_data["project"] is not None
 

@@ -1,9 +1,9 @@
 from typing import Annotated
 from fastapi import FastAPI, HTTPException, Depends, Query
-from sqlmodel import Session, select
+from sqlmodel import Session
 
 from .crud_sql import SQLProjectOperations, SQLTaskOperations
-from .models import ProjectBase, ProjectRead, ProjectUpdate, TaskBase, TaskRead, TaskUpdate
+from .models import Project, ProjectBase, ProjectRead, ProjectUpdate, Task, TaskBase, TaskRead, TaskUpdate
 from .database import get_sqlite_db, create_db
 from .services import ProjectService, TaskService
 
@@ -35,14 +35,14 @@ def on_startup():
 
 
 @tmt.get("/tasks", response_model=list[TaskRead], status_code=200)
-def get_tasks(task_service: TaskServiceDep, limit: Annotated[int, Query(le=100)] = 100, offset: int = 0) -> list[TaskRead]:
+def get_tasks(task_service: TaskServiceDep, limit: Annotated[int, Query(le=100)] = 100, offset: int = 0) -> list[Task]:
     try:
         return task_service.get_paginated_tasks(limit=limit, offset=offset)
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
 
 @tmt.get("/tasks/deadlines", response_model=list[TaskRead], status_code=200)
-def get_tasks_with_deadline(task_service: TaskServiceDep) -> list[TaskRead]:
+def get_tasks_with_deadline(task_service: TaskServiceDep) -> list[Task]:
     try:
         return task_service.get_tasks_with_deadline()
     except ValueError as e:
@@ -50,7 +50,7 @@ def get_tasks_with_deadline(task_service: TaskServiceDep) -> list[TaskRead]:
 
 
 @tmt.post("/tasks", response_model=TaskRead, status_code=201)
-def create_task(task: TaskBase, task_service: TaskServiceDep) -> TaskRead:
+def create_task(task: TaskBase, task_service: TaskServiceDep) -> Task:
     try:
         return task_service.create_task(task=task)
     except ValueError as e:
@@ -58,7 +58,7 @@ def create_task(task: TaskBase, task_service: TaskServiceDep) -> TaskRead:
 
 
 @tmt.put("/tasks/{_id}", response_model=TaskRead, status_code=200)
-def update_task(_id: int, task_update: TaskUpdate, task_service: TaskServiceDep) -> TaskRead:
+def update_task(_id: int, task_update: TaskUpdate, task_service: TaskServiceDep) -> Task:
     try:
         return task_service.update_task(task_id=_id, task_update=task_update)
     except ValueError as e:
@@ -77,7 +77,7 @@ def delete_task(_id: int, task_service: TaskServiceDep) -> None:
 
 
 @tmt.get("/projects", response_model=list[ProjectRead], status_code=200)
-def get_projects(project_service: ProjectServiceDep, limit: Annotated[int, Query(le=100)] = 100, offset: int = 0) -> list[ProjectRead]:
+def get_projects(project_service: ProjectServiceDep, limit: Annotated[int, Query(le=100)] = 100, offset: int = 0) -> list[Project]:
     try:
         return project_service.get_paginated_projects(limit=limit, offset=offset)
     except ValueError as e:
@@ -85,7 +85,7 @@ def get_projects(project_service: ProjectServiceDep, limit: Annotated[int, Query
 
 
 @tmt.post("/projects", response_model=ProjectRead, status_code=201)
-def create_project(project: ProjectBase, project_service: ProjectServiceDep) -> ProjectRead:
+def create_project(project: ProjectBase, project_service: ProjectServiceDep) -> Project:
     try:
         return project_service.create_project(project=project)
     except ValueError as e:
@@ -93,7 +93,7 @@ def create_project(project: ProjectBase, project_service: ProjectServiceDep) -> 
 
 
 @tmt.put("/projects/{_id}", response_model=ProjectRead, status_code=200)
-def update_project(_id: int, project_update: ProjectUpdate, project_service: ProjectServiceDep) -> ProjectRead:
+def update_project(_id: int, project_update: ProjectUpdate, project_service: ProjectServiceDep) -> Project:
     try:
         return project_service.update_project(project_id=_id, project_update=project_update)
     except ValueError as e:
