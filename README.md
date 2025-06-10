@@ -14,3 +14,12 @@
 5. For testing use this command
 
         docker compose build tests && docker compose --profile tests run --rm tests
+
+
+### Development
+1. From main project directory install uv and download dependencies:
+         
+         apt install uv && uv sync
+2. Start development server that refreshes after changes in code
+
+         uv run fastapi run tmt/main.py --port 8000 --host 0.0.0.0 --reload
